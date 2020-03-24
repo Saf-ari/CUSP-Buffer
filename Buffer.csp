@@ -1,33 +1,48 @@
 	.EQU @, $000
+
+
+	.EQU buffer, $100	;monitor video buffer
+	.EQU control, $316	;monitor control
+	.EQU reset, $01	;clear screen
+	.EQU width, 38	;monitor width
+	.EQU line_chars, 32
+
+
 	.EQU KEYBOARD_STATUS, $000
 	.EQU KEYBOARD_DATA, $001
-	.EQU buffer, $100
-	.EQU control, $316
-	.EQU reset, $01
-	.EQU width, 38
-	.EQU line_chars, 32
-char:.WORD 0
-num:.WORD 0
 
-MAIN:	LDA# reset
+char:.WORD 0
+num:.WORD 0			;counter
+	LDA# reset
 	OUTB control
+
+
+
+
 	LDX# (3*width)+3
-	CLR char
+	CLR char	;reset values
 	CLR num
-loop:	INB $000
+
+
+loop:	
+	
+	INB $000	;check keyboard loop
 	NOP
-	JGE loop
+	JGE loop 	; initial loop
 	INB $001
-	STC char
+	STC char	;store keyboard entry
+
 	OUTB+ buffer
 	ADX# 1
-	INC num
+	INC num	;increase counter
 	LDA num
 	CMA# line_chars
 	JLT loop
-	ADX# width-line_chars
+	ADX# width-line_chars	;across
 	CLR num
 	LDA char
 	CMA# 256
-	JLT loop
-	HLT
+	JLT loop	;second loop
+
+
+	HLT		; end
