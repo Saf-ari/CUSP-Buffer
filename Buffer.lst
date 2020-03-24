@@ -1,0 +1,41 @@
+LINE ADDR CONTENTS SOURCE LINE
+  1.              	.EQU @, $000
+  2.              	.EQU KEYBOARD_STATUS, $000
+  3.              	.EQU KEYBOARD_DATA, $001
+  4.              	.EQU buffer, $100
+  5.              	.EQU control, $316
+  6.              	.EQU reset, $01
+  7.              	.EQU width, 38
+  8.              	.EQU line_chars, 32
+  9.  000 000000  char:.WORD 0
+ 10.  001 000000  num:.WORD 0
+ 11.              
+ 12.  002 000001  MAIN:	LDA# reset
+ 13.  003 712316  	OUTB control
+ 14.  004 010075  	LDX# (3*width)+3
+ 15.  005 0A2000  	CLR char
+ 16.  006 0A2001  	CLR num
+ 17.  007 702000  loop:	INB $000
+ 18.  008 FFF038  	NOP
+ 19.  009 4B2007  	JGE loop
+ 20.  00A 702001  	INB $001
+ 21.  00B 512000  	STC char
+ 22.  00C 714100  	OUTB+ buffer
+ 23.  00D 110001  	ADX# 1
+ 24.  00E 1B2001  	INC num
+ 25.  00F 002001  	LDA num
+ 26.  010 200020  	CMA# line_chars
+ 27.  011 4A2007  	JLT loop
+ 28.  012 110006  	ADX# width-line_chars
+ 29.  013 0A2001  	CLR num
+ 30.  014 002000  	LDA char
+ 31.  015 200100  	CMA# 256
+ 32.  016 4A2007  	JLT loop
+ 33.  017 FFFFFF  	HLT
+
+                     SYMBOL TABLE CONTENTS
+
+000100 = BUFFER          000000 = CHAR            000316 = CONTROL         
+000001 = KEYBOARD_DATA   000000 = KEYBOARD_STATUS 000020 = LINE_CHARS      
+000007 = LOOP            000002 = MAIN            000001 = NUM             
+000001 = RESET           000026 = WIDTH           
