@@ -1,0 +1,33 @@
+	.EQU @, $000
+	.EQU KEYBOARD_STATUS, $000
+	.EQU KEYBOARD_DATA, $001
+	.EQU buffer, $100
+	.EQU control, $316
+	.EQU reset, $01
+	.EQU width, 38
+	.EQU line_chars, 32
+char:.WORD 0
+num:.WORD 0
+
+MAIN:	LDA# reset
+	OUTB control
+	LDX# (3* width) + 3
+	CLR char
+	CLR num
+loop:	INB $000
+	NOP
+	JGE loop
+	INB $001
+	STC char
+	OUTB+ buffer
+	ADX# 1
+	INC num
+	LDA num
+	CMA# line_chars
+	JLT loop
+	ADX# width - line_chars
+	CLR num
+	LDA char
+	CMA# 256
+	JLT loop
+	HLT
