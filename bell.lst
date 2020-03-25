@@ -1,0 +1,46 @@
+LINE ADDR CONTENTS SOURCE LINE
+  1.              	.equ monitor_data, $317
+  2.              	.equ time_control, $030
+  3.              	.equ time_status, $030
+  4.              	.equ time_value, $031
+  5.              	.equ time_count, $034
+  6.              
+  7.              	.equ bell, $07
+  8.              	.equ reset_ready_bit, $40
+  9.              	.equ start_after_reload, $10
+ 10.              	.equ enable_reset_and_start, $D0
+ 11.              	.equ enable_and_reset, $C0
+ 12.              	
+ 13.              	.equ stack_top, $E00
+ 14.              
+ 15.              
+ 16.  000 020E00  main:	lds# stack_top
+ 17.  001 000FFC  	lda# cycle
+ 18.  002 732031  	outw time_value
+ 19.  003 0000D0  	lda# enable_reset_and_start
+ 20.  004 712030  	outb time_control
+ 21.  005 FFF032  	sie
+ 22.              
+ 23.  006 FFF038  do_work:	nop
+ 24.  007 FFF038  	nop
+ 25.  008 402006  	jmp do_work
+ 26.              
+ 27.  009 FFF010  isr:	psha
+ 28.  00A 0000C0  	lda# enable_and_reset
+ 29.  00B 712030  	outb time_control
+ 30.  00C 000007  	lda# bell
+ 31.  00D 712317  	outb monitor_data
+ 32.  00E FFF013  	popa
+ 33.  00F FFF041  	irtn
+ 34.              
+ 35.              	.equ @, $FFB
+ 36.  FFB 000009  	.word ISR
+ 37.  FFC 002710  cycle:	.word 10000
+
+                     SYMBOL TABLE CONTENTS
+
+000007 = BELL            000FFC = CYCLE           000006 = DO_WORK         
+0000C0 = ENABLE_AND_RESET0000D0 = ENABLE_RESET_AND_START000009 = ISR             
+000000 = MAIN            000317 = MONITOR_DATA    000040 = RESET_READY_BIT 
+000E00 = STACK_TOP       000010 = START_AFTER_RELOAD000030 = TIME_CONTROL    
+000034 = TIME_COUNT      000030 = TIME_STATUS     000031 = TIME_VALUE      

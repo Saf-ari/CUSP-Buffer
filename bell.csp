@@ -1,0 +1,37 @@
+	.equ monitor_data, $317
+	.equ time_control, $030
+	.equ time_status, $030
+	.equ time_value, $031
+	.equ time_count, $034
+
+	.equ bell, $07
+	.equ reset_ready_bit, $40
+	.equ start_after_reload, $10
+	.equ enable_reset_and_start, $D0
+	.equ enable_and_reset, $C0
+	
+	.equ stack_top, $E00
+
+
+main:	lds# stack_top
+	lda# cycle
+	outw time_value
+	lda# enable_reset_and_start
+	outb time_control
+	sie
+
+do_work:	nop
+	nop
+	jmp do_work
+
+isr:	psha
+	lda# enable_and_reset
+	outb time_control
+	lda# bell
+	outb monitor_data
+	popa
+	irtn
+
+	.equ @, $FFB
+	.word ISR
+cycle:	.word 10000
